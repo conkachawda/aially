@@ -69,8 +69,8 @@ a:hover { color: var(--orange); }
 .btn-lg { padding: 16px 32px; font-size: 1.05rem; }
 .btn-primary { background: var(--orange); color: white; }
 .btn-primary:hover { background: #e85a26; color: white; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3); }
-.btn-secondary { background: transparent; color: var(--navy); border-color: var(--navy); }
-.btn-secondary:hover { background: var(--navy); color: white; }
+.btn-secondary { background: white; color: var(--navy); border-color: white; }
+.btn-secondary:hover { background: var(--cloud); color: var(--navy); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255, 255, 255, 0.3); }
 
 /* Header */
 .site-header {
