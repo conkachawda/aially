@@ -1,0 +1,54 @@
+# =============================================================================
+#  Scheduling examples — pick the one matching your always-on host.
+#  Assumes you copied this folder to /opt/email-sync and made sync.sh executable.
+# =============================================================================
+
+## ---------------------------------------------------------------------------
+## Linux — cron (every 5 minutes)
+## ---------------------------------------------------------------------------
+##   crontab -e   then add:
+*/5 * * * * /opt/email-sync/sync.sh
+
+## ---------------------------------------------------------------------------
+## Linux — systemd timer (preferred; survives reboots, better logging)
+## ---------------------------------------------------------------------------
+## /etc/systemd/system/mailsync.service
+# [Unit]
+# Description=Hotmail <-> M365 two-way mail sync
+# [Service]
+# Type=oneshot
+# ExecStart=/opt/email-sync/sync.sh
+# Environment=MS_OAUTH_CLIENT_ID=00000000-0000-0000-0000-000000000000
+
+## /etc/systemd/system/mailsync.timer
+# [Unit]
+# Description=Run mail sync every 5 minutes
+# [Timer]
+# OnBootSec=2min
+# OnUnitActiveSec=5min
+# Persistent=true
+# [Install]
+# WantedBy=timers.target
+
+##   systemctl enable --now mailsync.timer
+##   systemctl list-timers | grep mailsync
+
+## ---------------------------------------------------------------------------
+## macOS — launchd (every 300 seconds)
+## ---------------------------------------------------------------------------
+## ~/Library/LaunchAgents/com.aially.mailsync.plist
+# <?xml version="1.0" encoding="UTF-8"?>
+# <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+#   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+# <plist version="1.0"><dict>
+#   <key>Label</key><string>com.aially.mailsync</string>
+#   <key>ProgramArguments</key>
+#     <array><string>/opt/email-sync/sync.sh</string></array>
+#   <key>StartInterval</key><integer>300</integer>
+#   <key>EnvironmentVariables</key>
+#     <dict><key>MS_OAUTH_CLIENT_ID</key>
+#           <string>00000000-0000-0000-0000-000000000000</string></dict>
+#   <key>StandardErrorPath</key><string>/tmp/mailsync.err</string>
+# </dict></plist>
+
+##   launchctl load ~/Library/LaunchAgents/com.aially.mailsync.plist

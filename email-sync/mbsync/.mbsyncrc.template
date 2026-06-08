@@ -1,0 +1,82 @@
+# =============================================================================
+#  mbsync (isync) config — Hotmail <-> M365 two-way mirror via local Maildir hub
+# =============================================================================
+#
+#  Copy this to ~/.mbsyncrc and edit the marked <PLACEHOLDERS>.
+#  Requires isync >= 1.4 (native XOAUTH2 / OAuth2 support — no SASL plugin needed).
+#  Check your version:   mbsync --version
+#
+#  OAuth2 access tokens are produced on demand by oauth2_token.py (see SETUP.md).
+#  mbsync calls it via PassCmd and gets a fresh token each run.
+# =============================================================================
+
+# ----------------------------- ACCOUNT A: Hotmail ----------------------------
+IMAPAccount hotmail
+Host imap-mail.outlook.com
+Port 993
+User niteshchawda@hotmail.com
+AuthMechs XOAUTH2
+PassCmd "python3 /opt/email-sync/oauth2_token.py --account hotmail"
+TLSType IMAPS
+# Be polite to the server; Outlook throttles aggressive parallelism.
+PipelineDepth 50
+
+IMAPStore hotmail-remote
+Account hotmail
+
+# ----------------------------- ACCOUNT B: M365 -------------------------------
+IMAPAccount m365
+Host outlook.office365.com
+Port 993
+User CEO@niteshchawdaconsulting.onmicrosoft.com
+AuthMechs XOAUTH2
+PassCmd "python3 /opt/email-sync/oauth2_token.py --account m365"
+TLSType IMAPS
+PipelineDepth 50
+
+IMAPStore m365-remote
+Account m365
+
+# ------------------------- LOCAL Maildir hub (relay + backup) ----------------
+MaildirStore local
+# NOTE the trailing slashes — required by mbsync.
+Path ~/Mail/hub/
+Inbox ~/Mail/hub/Inbox/
+# Folders use '/' as the hierarchy separator on disk.
+SubFolders Verbatim
+
+# =============================================================================
+#  CHANNELS
+#  Both Outlook.com and Exchange Online use IDENTICAL special-folder names
+#  (Inbox, Sent Items, Drafts, Deleted Items, Junk Email, Archive), so a single
+#  "Patterns *" mapping lines up cleanly on both sides.
+# =============================================================================
+
+Channel hotmail-hub
+Far :hotmail-remote:
+Near :local:
+Patterns *
+# Full two-way: create/delete/flag changes propagate in both directions.
+Create Both
+Remove Both
+Expunge Both
+SyncState *
+
+Channel m365-hub
+Far :m365-remote:
+Near :local:
+Patterns *
+Create Both
+Remove Both
+Expunge Both
+SyncState *
+
+# Run both channels together (this is what sync.sh invokes).
+Group mirror
+Channel hotmail-hub
+Channel m365-hub
+
+# -----------------------------------------------------------------------------
+#  FIRST RUN SAFETY: before trusting Remove/Expunge Both, do an initial
+#  pull-only pass so nothing is ever deleted by surprise. See SETUP.md step 6.
+# -----------------------------------------------------------------------------
