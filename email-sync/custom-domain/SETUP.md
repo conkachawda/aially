@@ -15,9 +15,28 @@ Microsoft's standard derivation (dots in the domain become dashes), but **always
 confirm against what your own admin center shows** before saving DNS — Microsoft
 shows the exact strings to paste.
 
-> **DNS host:** these records go wherever `niteshchawda.consulting`'s DNS is managed
-> (looks like **name.com** from your recent renewal — confirm). The record *values*
-> are the same regardless of host; only the UI differs.
+> **DNS host:** `niteshchawda.consulting`'s DNS is managed at **name.com**. In
+> name.com: **My Account → My Domains →** click `niteshchawda.consulting` **→ DNS
+> Records** (Manage DNS Records). Leave the **Host** field blank for `@` (root);
+> name.com appends the domain automatically. For MX, set **Type=MX**, blank host,
+> **Answer** = the `mail.protection.outlook.com` value, **Priority=0**.
+
+> ## ⚠️ Titan email on this domain — read before switching MX
+> name.com bundles **Titan Email**. If you currently send/receive
+> `ceo@niteshchawda.consulting` (or any address on this domain) through **Titan**,
+> note:
+> - A domain has **one** live mail provider. Pointing MX at Microsoft 365 means new
+>   mail for the domain flows to **M365**, and **Titan stops receiving** it.
+> - Mail already sitting in the **Titan** mailbox does **not** move automatically.
+>   It can be copied into M365 as a one-time job (the same `oauth2`/IMAP tooling in
+>   `../mbsync` can pull Titan → M365 — ask me and I'll add a Titan source).
+> - In name.com, **turn off / cancel the Titan email subscription** for this domain
+>   once M365 is verified, and **delete the old Titan MX + SPF records** (e.g.
+>   `mx1.titan.email`, `mx2.titan.email`, `include:titan.email`) so they don't
+>   conflict with the Microsoft ones below.
+>
+> If the domain is **not** on Titan yet (fresh domain, no live mailboxes), ignore
+> this box — it's a clean setup.
 
 ---
 
