@@ -8,7 +8,7 @@ This folder contains three independent deliverables:
 
 | Folder | What it does | Old mail? | New mail? | Read/flag state? | Needs a server? |
 |--------|--------------|-----------|-----------|------------------|-----------------|
-| [`mbsync/`](mbsync/) | **Primary engine.** True bidirectional mirror of every folder via `mbsync` (isync) with a local Maildir hub. | ✅ | ✅ | ✅ | Yes — an always-on machine/VPS to run it on a schedule |
+| [`mbsync/`](mbsync/) | **Primary engine.** Two-way **copy** of every folder via `mbsync` (isync) with a local Maildir hub — emails show up in both, **nothing is ever deleted**. | ✅ | ✅ | ✅ | Yes — an always-on machine/VPS to run it on a schedule |
 | [`power-automate/`](power-automate/) | No-server companion. Cloud flows copy each *new* message both ways. | ❌ (forward-only) | ✅ | ❌ | No |
 | [`custom-domain/`](custom-domain/) | Guide to replace the ugly `…onmicrosoft.com` address with a real custom domain (e.g. `ceo@yourdomain.com`). | — | — | — | No |
 
@@ -19,9 +19,10 @@ and an M365 tenant mailbox. The old shortcut — Microsoft 365 / Outlook.com
 **"Connected Accounts"** — was retired by Microsoft in 2024. Plain two-way
 forwarding causes mail loops and syncs nothing useful (no folders, no read state).
 
-`mbsync` is the only approach here that gives you a genuine mirror of your **entire
-existing mailbox** (old + new), keeps **folders and read/unread/flag state**
-consistent, and runs **both directions**.
+`mbsync` is the only approach here that copies your **entire existing mailbox**
+(old + new), keeps **folders and read/unread/flag state** in sync, and runs
+**both directions**. It is configured **copy-only**: a deletion in one mailbox is
+never pushed to the other — emails just show up in both and stay there.
 
 Power Automate is included only as a belt-and-suspenders option for "new mail shows
 up in both" with zero infrastructure — but it **cannot backfill old email** and does

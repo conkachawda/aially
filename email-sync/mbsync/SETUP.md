@@ -1,9 +1,10 @@
 # mbsync setup — true two-way mirror (Hotmail ⇄ M365)
 
 End result: every folder in `niteshchawda@hotmail.com` and
-`CEO@niteshchawdaconsulting.onmicrosoft.com` stays mirrored in both directions —
+`CEO@niteshchawdaconsulting.onmicrosoft.com` is **copied into both** —
 **all existing mail and all new mail**, with read/unread and flag state — plus a
-local backup. Runs on a schedule on an always-on machine you control.
+local backup. It is **copy-only: nothing is ever deleted** from either mailbox.
+Runs on a schedule on an always-on machine you control.
 
 Budget ~30–45 minutes for first-time setup (mostly the one-time OAuth app
 registration). After that it just runs.
@@ -110,24 +111,17 @@ fails, fix auth **before** syncing — see Troubleshooting.
 
 ---
 
-## 6. First sync — DO A SAFE PULL FIRST ⚠️
+## 6. First sync
 
-Before letting `Remove/Expunge Both` act, do a non-destructive first pass so a
-surprise can't delete mail. Run a **pull-only** initial import once:
-
-```bash
-# Pull everything down into the local hub WITHOUT pushing deletes back up.
-mbsync --pull-new --pull mirror
-```
-Inspect `~/Mail/hub/` — confirm both accounts' mail landed. Then run the full
-two-way sync:
+The config is copy-only (`Remove None`, `Expunge None`, no `Delete` in `Sync`), so
+no run can delete mail — worst case a message gets re-copied. Just run it:
 
 ```bash
 /opt/email-sync/sync.sh
 tail -n 40 ~/Mail/sync.log
 ```
-The **first full run can take a while** (it copies your entire mailbox history).
-Subsequent runs are incremental and fast.
+The **first run can take a while** (it copies your entire mailbox history into both
+sides via the hub). Subsequent runs are incremental and fast.
 
 ---
 
@@ -139,12 +133,16 @@ systemd timer / launchd). Every-5-minutes is a good default. Make sure
 
 ---
 
-## How deletes/moves behave
+## How deletes/moves behave (copy-only)
 
-`Create Both`, `Remove Both`, `Expunge Both` make it a true mirror: deleting or
-moving a message in **either** account removes/moves it in the other on the next
-run. If you'd rather one side never delete from the other, tell me and I'll switch
-to a non-destructive profile (`Remove None` on one channel).
+Nothing is ever deleted. If you delete a message in one mailbox, it **stays** in
+the other (and may get re-copied back on a later run). New mail and read/flag
+changes propagate both ways; deletions do not. This is the "show it in both and
+keep it" behaviour you asked for.
+
+> If you ever *do* want deletions to sync (so folders match exactly), change both
+> channels to `Remove Both` + `Sync All` — but that re-enables deleting, so leave
+> it as-is unless that's what you want.
 
 ---
 
@@ -159,5 +157,5 @@ to a non-destructive profile (`Remove None` on one channel).
 | Token works manually but cron fails | `MS_OAUTH_CLIENT_ID` missing in the scheduler env (see `schedule.examples`). |
 | Throttling / slow on Outlook | Lower `PipelineDepth` in `~/.mbsyncrc` (e.g. 20). |
 
-> Want this folder to never lose mail on a bad run? Ask me to ship the
-> "archive-safe" variant (deletes never propagate, only additions/flags).
+> This config is already the safe, copy-only profile — deletions never propagate,
+> only new messages and read/flag changes. Your mail can't be lost by a sync.

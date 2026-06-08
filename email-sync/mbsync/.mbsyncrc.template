@@ -1,5 +1,6 @@
 # =============================================================================
-#  mbsync (isync) config — Hotmail <-> M365 two-way mirror via local Maildir hub
+#  mbsync (isync) config — Hotmail <-> M365 two-way COPY via local Maildir hub
+#  Copy-only: messages are copied into both mailboxes; nothing is ever deleted.
 # =============================================================================
 #
 #  Copy this to ~/.mbsyncrc and edit the marked <PLACEHOLDERS>.
@@ -56,19 +57,22 @@ Channel hotmail-hub
 Far :hotmail-remote:
 Near :local:
 Patterns *
-# Full two-way: create/delete/flag changes propagate in both directions.
+# COPY-ONLY: copy new messages into both sides; never delete from either.
+Sync New Flags
 Create Both
-Remove Both
-Expunge Both
+Remove None
+Expunge None
 SyncState *
 
 Channel m365-hub
 Far :m365-remote:
 Near :local:
 Patterns *
+# COPY-ONLY: copy new messages into both sides; never delete from either.
+Sync New Flags
 Create Both
-Remove Both
-Expunge Both
+Remove None
+Expunge None
 SyncState *
 
 # Run both channels together (this is what sync.sh invokes).
@@ -77,6 +81,9 @@ Channel hotmail-hub
 Channel m365-hub
 
 # -----------------------------------------------------------------------------
-#  FIRST RUN SAFETY: before trusting Remove/Expunge Both, do an initial
-#  pull-only pass so nothing is ever deleted by surprise. See SETUP.md step 6.
+#  Because Remove/Expunge are None and Sync excludes Delete, a deletion in
+#  either mailbox is NEVER propagated. Worst case a message reappears (gets
+#  re-copied) — it can't be lost. To later make folders match exactly
+#  (propagate deletes), you'd change to Remove Both / Sync All — don't, unless
+#  you want deletions to sync.
 # -----------------------------------------------------------------------------
