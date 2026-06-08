@@ -21,8 +21,12 @@ shows the exact strings to paste.
 > name.com appends the domain automatically. For MX, set **Type=MX**, blank host,
 > **Answer** = the `mail.protection.outlook.com` value, **Priority=0**.
 
-> ## ⚠️ Titan email on this domain — read before switching MX
-> name.com bundles **Titan Email**. If you currently send/receive
+> ## Titan email on this domain
+> ✅ **Confirmed: this domain is NOT on Titan** — it's a clean setup, so you can
+> skip this box and just add the Microsoft records below. (Kept for reference in
+> case Titan is ever turned on.)
+>
+> name.com bundles **Titan Email**. If you ever currently send/receive
 > `ceo@niteshchawda.consulting` (or any address on this domain) through **Titan**,
 > note:
 > - A domain has **one** live mail provider. Pointing MX at Microsoft 365 means new
