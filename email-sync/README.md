@@ -10,7 +10,7 @@ This folder contains three independent deliverables:
 |--------|--------------|-----------|-----------|------------------|-----------------|
 | [`mbsync/`](mbsync/) | **Primary engine.** Two-way **copy** of every folder via `mbsync` (isync) with a local Maildir hub — emails show up in both, **nothing is ever deleted**. | ✅ | ✅ | ✅ | Yes — an always-on machine/VPS to run it on a schedule |
 | [`power-automate/`](power-automate/) | No-server companion. Cloud flows copy each *new* message both ways. | ❌ (forward-only) | ✅ | ❌ | No |
-| [`custom-domain/`](custom-domain/) | Guide to replace the ugly `…onmicrosoft.com` address with a real custom domain (e.g. `ceo@yourdomain.com`). | — | — | — | No |
+| [`custom-domain/`](custom-domain/) | Guide to move the CEO mailbox onto `niteshchawda.consulting` so the address becomes `ceo@niteshchawda.consulting` (same M365 account). | — | — | — | No |
 
 ## Why mbsync is the real answer
 
